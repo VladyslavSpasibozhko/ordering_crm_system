@@ -1,0 +1,39 @@
+# Node.js
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Compiled output
+dist/
+build/
+*.js
+
+# Dependency directories
+/.pnp/
+.pnp.js
+
+# ESLint cache
+.eslintcache
+
+# Editor-specific files
+.vscode/
+.idea/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+log/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment variables
+.env
+
+# Compiled output from Parcel
+.cache/
+out/

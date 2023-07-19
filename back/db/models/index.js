@@ -6,3 +6,5 @@ export { Role } from './Role';
 export { RoleSettings } from './RoleSettings';
 export { User } from './User';
 export { UserAuth } from './UserAuth';
+
+// TODO: Create interface for interacting woth models
