@@ -12,7 +12,7 @@ const fetcher = () => {
   }
 
   return createGraphiQLFetcher({
-    url: 'http://localhost:8080/api/',
+    url: 'http://localhost:8080/api/graphql/',
     headers,
   });
 };

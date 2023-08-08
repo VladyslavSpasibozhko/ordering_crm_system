@@ -12,7 +12,7 @@ const ENTITIES = [
 ];
 
 export const RoleSettings = sequelize.define(
-  'ROLE_SETTINGS',
+  'RoleSettings',
   {
     role_id: {
       type: DataTypes.INTEGER,
@@ -26,7 +26,7 @@ export const RoleSettings = sequelize.define(
       type: DataTypes.ENUM(...ENTITIES),
       allowNull: false,
     },
-    create: {
+    add: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: false,
@@ -41,7 +41,7 @@ export const RoleSettings = sequelize.define(
       allowNull: false,
       defaultValue: false,
     },
-    update: {
+    change: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: false,

@@ -6,7 +6,7 @@ const connect = async () => {
     await sequelize.authenticate();
     return true;
   } catch (e) {
-    console.log(e);
+    console.log('Init sequelize error', e);
     return false;
   }
 };
@@ -16,6 +16,7 @@ const sync = async () => {
     await sequelize.sync();
     return true;
   } catch {
+    console.log('Sync sequelize error', e);
     return false;
   }
 };
@@ -29,4 +30,7 @@ connect()
         console.log('Server running on 8080 port!');
       });
     }
+  })
+  .catch((e) => {
+    console.log('Run server error', e);
   });

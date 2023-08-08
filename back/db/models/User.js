@@ -3,7 +3,7 @@ import { sequelize } from '../db';
 import { Role } from './Role';
 
 export const User = sequelize.define(
-  'USER',
+  'User',
   {
     first_name: {
       type: DataTypes.STRING(50),
