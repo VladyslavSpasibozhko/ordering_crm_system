@@ -1,6 +1,6 @@
 import http from 'http';
 import { routes } from './routes';
-import { router } from './router';
+import { router } from './system/router';
 
 export const create = () => {
   return http.createServer((request, response) => {

@@ -1,36 +1,15 @@
 import { create } from './server';
-import { sequelize } from './db';
+import { db } from './db';
+import { envs } from './services/envs';
 
-const connect = async () => {
-  try {
-    await sequelize.authenticate();
-    return true;
-  } catch (e) {
-    console.log('Init sequelize error', e);
-    return false;
-  }
-};
+const server = create();
+server.listen(envs.APP_PORT);
+db.init();
 
-const sync = async () => {
-  try {
-    await sequelize.sync();
-    return true;
-  } catch {
-    console.log('Sync sequelize error', e);
-    return false;
-  }
-};
+server.on('listening', () => {
+  console.log(`Server running on ${envs.APP_PORT} port!`);
+});
 
-connect()
-  .then(sync)
-  .then((success) => {
-    if (success) {
-      const server = create();
-      server.listen(8080, () => {
-        console.log('Server running on 8080 port!');
-      });
-    }
-  })
-  .catch((e) => {
-    console.log('Run server error', e);
-  });
+server.on('error', (err) => {
+  console.log(err);
+});
