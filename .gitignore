@@ -6,7 +6,6 @@ yarn-error.log
 # Compiled output
 dist/
 build/
-*.js
 
 # Dependency directories
 /.pnp/
@@ -36,4 +35,3 @@ yarn-error.log*
 
 # Compiled output from Parcel
 .cache/
-out/
