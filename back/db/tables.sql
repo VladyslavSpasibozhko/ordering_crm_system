@@ -34,9 +34,10 @@ CREATE TABLE users (
 
 CREATE TABLE user_auth (
     email  VARCHAR(50) NOT NULL UNIQUE,
-    password_hash VARCHAR(50),
+    password_hash VARCHAR(255),
     salt VARCHAR(50),
-    confirmed BOOLEAN
+    confirmed BOOLEAN,
+    FOREIGN KEY (email) REFERENCES users(email) ON DELETE CASCADE;
 );
 
 CREATE TABLE consumable (

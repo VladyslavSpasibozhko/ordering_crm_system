@@ -1,2 +1,0 @@
-ALTER TABLE product_consumable
-ADD COLUMN id SERIAL PRIMARY KEY;
