@@ -1,23 +1,23 @@
 export const login = ({ body }) => ({
-  url: '/login/',
+  url: '/auth/login/',
   method: 'POST',
   body: JSON.stringify(body),
 });
 
-export const register = ({ body }) => ({
-  url: '/register/',
+export const confirm = ({ body }) => ({
+  url: '/auth/confirm/',
   method: 'POST',
   body: JSON.stringify(body),
 });
 
 export const check_token = ({ body }) => ({
-  url: '/check_token/',
+  url: '/auth/check_token/',
   method: 'POST',
   body: JSON.stringify(body),
 });
 
 export const refresh_token = ({ body }) => ({
-  url: '/refresh_token/',
+  url: '/auth/refresh_token/',
   method: 'POST',
   body: JSON.stringify(body),
 });

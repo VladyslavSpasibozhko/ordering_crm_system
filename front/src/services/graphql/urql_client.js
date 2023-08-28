@@ -1,6 +1,7 @@
 import { createClient, cacheExchange, fetchExchange, Provider } from 'urql';
 import PropTypes from 'prop-types';
 
+// TODO: Move to env
 const base = 'http://localhost:8080/';
 
 export const client = createClient({

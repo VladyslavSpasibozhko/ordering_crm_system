@@ -1,7 +1,12 @@
 import { rootRoutes } from '../views/Root';
 import { graphiQlRoutes } from '../views/GraphiQL';
+import { authRoutes } from '../views/Auth';
+import { appRoutes } from '../views/App';
 
 const _graphiQlRoutes = graphiQlRoutes();
-const _rootRoutes = rootRoutes();
+const _authRoutes = authRoutes();
+const _appRoutes = appRoutes();
 
-export const routesConfig = [].concat(_graphiQlRoutes, _rootRoutes);
+const routes = [].concat(_graphiQlRoutes, _authRoutes, _appRoutes);
+
+export const routesConfig = rootRoutes(routes);
