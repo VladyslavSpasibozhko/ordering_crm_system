@@ -12,8 +12,8 @@ const post = async ({ request, options }) => {
       .where({ email: body.email })
       .perform();
 
-    if (userResponse.error) {
-      options.notFound(userResponse.error);
+    if (!userResponse.data.rowCount) {
+      options.notFound('User with email=' + body.email + ' not found');
       return;
     }
 
@@ -36,12 +36,12 @@ const post = async ({ request, options }) => {
     }
 
     const response = await db
-      .select(['*'], 'user')
+      .select(['*'], 'users')
       .where({ email: userAuth.email })
       .perform();
 
     if (response.error) {
-      options.badRequest('User not found:' + userAuth.email);
+      options.badRequest('User not found: ' + userAuth.email);
       return;
     }
 

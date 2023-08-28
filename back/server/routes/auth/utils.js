@@ -44,16 +44,16 @@ export async function verifyPassword(password, hashedPassword, salt) {
   }
 }
 
-export function generateToken(data, secret) {
+export function generateToken(data, secret, expires) {
   try {
     const token = jwt.sign(data, secret, {
-      expiresIn: expires,
+      expiresIn: ms(expires),
     });
 
     return {
       success: true,
       data: {
-        expiresIn: ms(expires),
+        expiresIn: expires,
         token,
       },
     };
@@ -81,8 +81,8 @@ export async function verifyToken(token, secret, expires) {
 
 export async function generateTokens(data, secret, expiration) {
   try {
-    const accessToken = generateToken(data, secret, ms(expiration.access));
-    const refreshToken = generateToken(data, secret, ms(expiration.refresh));
+    const accessToken = generateToken(data, secret, expiration.access);
+    const refreshToken = generateToken(data, secret, expiration.refresh);
 
     if (accessToken.success && refreshToken.success) {
       const result = {

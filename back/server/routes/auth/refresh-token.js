@@ -7,7 +7,7 @@ const post = async ({ request, options }) => {
     const body = await options.getBody(request);
 
     const refreshToken = await verifyToken(
-      body.refreshToken,
+      body.token,
       envs.PASSWORD_SECRET_KEY,
       envs.REFRESH_TOKEN_EXPIRATION,
     );
@@ -24,6 +24,7 @@ const post = async ({ request, options }) => {
         email: refreshToken.data.email,
       },
       envs.PASSWORD_SECRET_KEY,
+      envs.ACCESS_TOKEN_EXPIRATION,
     );
 
     if (newAccessToken.success) {

@@ -12,7 +12,8 @@ const authConfig = new Map([
   ['/api/auth/change-password', changePasswordController],
   ['/api/auth/confirm', confirmController],
   ['/api/auth/login', loginController],
-  ['/api/auth/refresh-token', refreshTokenController],
+  ['/api/auth/refresh_token', refreshTokenController],
+  ['*', controller()],
 ]);
 
 const apiConfig = new Map([
