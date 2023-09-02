@@ -1,55 +1,39 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
-import {
-  setAccessToken,
-  setExpiresIn,
-  retrieveTokens,
-  isExpired,
-} from 'src/services/token';
-import { refreshTokenReq } from 'src/services/rest/auth/service';
+import { Box, Spinner } from '@chakra-ui/react';
+import { authFeatures } from 'src/features/auth';
 
 export const Root = () => {
+  const [loading, setLoading] = useState(true);
+
   const navigate = useNavigate();
 
-  const checkAccessToken = () => {
-    const { accessToken, refreshToken } = retrieveTokens();
-
-    if (accessToken) {
-      const _isExpired = isExpired();
-
-      if (_isExpired) {
-        refreshTokenMethod(refreshToken);
-      } else {
-        navigate('/app');
-      }
-    }
-
-    if (!accessToken) {
-      if (refreshToken) refreshTokenMethod(refreshToken);
-
-      if (!refreshToken) {
-        navigate('/auth/login');
-      }
-    }
-  };
-
-  const refreshTokenMethod = async (token) => {
-    const res = await refreshTokenReq({ body: { token } });
-
-    if (res.success) {
-      setAccessToken(res.data.token);
-      setExpiresIn(res.data.expiresIn);
-      navigate('/app');
-    }
-
-    if (!res.success) {
-      navigate('/auth/login');
-    }
-  };
-
   useEffect(() => {
-    checkAccessToken();
+    authFeatures.initTokenFeature().then((state) => {
+      navigate(state.path);
+      setLoading(false);
+    });
   }, []);
+
+  if (loading) {
+    return (
+      <Box
+        width="100vw"
+        height="100vh"
+        display="flex"
+        alignItems="center"
+        justifyContent="center"
+      >
+        <Spinner
+          thickness="4px"
+          speed="0.65s"
+          emptyColor="gray.200"
+          color="blue.500"
+          size="xl"
+        />
+      </Box>
+    );
+  }
 
   return <Outlet />;
 };

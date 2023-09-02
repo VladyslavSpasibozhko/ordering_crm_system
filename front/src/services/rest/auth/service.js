@@ -1,5 +1,5 @@
 import { login, check_token, refresh_token, confirm } from './endpoints';
-import { fetch } from '../fetch_client';
+import { fetch } from 'src/lib/fetchClient';
 
 export const loginReq = async ({ body }) => {
   const params = login({ body });

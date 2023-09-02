@@ -3,33 +3,24 @@ import { EmailIcon, LockIcon } from '@chakra-ui/icons';
 import { Error } from 'src/components/Error';
 import { Link } from 'src/components/Link';
 import { InputField } from 'src/components/InputField';
-import { useController, useForm } from 'react-hook-form';
-import { useLogin } from '../hooks/useLogin';
+import { Controller, useForm } from 'react-hook-form';
+import { authFeatures, useAuthStore } from 'src/features/auth';
+import { useNavigate } from 'react-router-dom';
 
 export function Login() {
-  const { error, loading, login } = useLogin();
+  const authStore = useAuthStore();
+  const navigate = useNavigate();
 
   const { control, handleSubmit } = useForm({
     defaultValues: { password: '', email: '' },
   });
 
-  const email = useController({
-    name: 'email',
-    control,
-    rules: { required: "Поле обов'язкове" },
-  });
-
-  const password = useController({
-    name: 'password',
-    control,
-    rules: {
-      required: "Поле обов'язкове",
-      minLength: { value: 8, message: 'Мінімальна довжина 8 символів' },
-    },
-  });
-
   async function onSubmit(values) {
-    await login(values);
+    const res = await authFeatures.loginFeature(values);
+
+    if (res.success) {
+      if (res.path) navigate(res.path);
+    }
   }
 
   return (
@@ -41,31 +32,54 @@ export function Login() {
       <Box mt="10" display="flex" alignItems="center" justifyContent="center">
         <Box width={400}>
           <form onSubmit={handleSubmit(onSubmit)}>
-            <InputField
-              size="lg"
-              placeholder="Email"
-              leftIcon={(props) => <EmailIcon {...props} />}
-              invalid={email.fieldState.invalid}
-              touched={email.fieldState.isTouched}
-              error={email.fieldState.error?.message || ''}
-              type="email"
-              {...email.field}
-            />
-            <InputField
-              size="lg"
-              placeholder="Пароль"
-              type="password"
-              leftIcon={(props) => <LockIcon {...props} />}
-              invalid={password.fieldState.invalid}
-              touched={password.fieldState.isTouched}
-              error={password.fieldState.error?.message || ''}
-              box={{
-                mt: '4',
-              }}
-              {...password.field}
+            <Controller
+              name="email"
+              control={control}
+              rules={{ required: "Поле обов'язкове" }}
+              render={({ fieldState, field }) => (
+                <InputField
+                  size="lg"
+                  placeholder="Email"
+                  leftIcon={(props) => <EmailIcon {...props} />}
+                  invalid={fieldState.invalid}
+                  touched={fieldState.isTouched}
+                  error={fieldState.error?.message || ''}
+                  type="email"
+                  {...field}
+                />
+              )}
             />
 
-            {error && <Error error={error} mt="4" />}
+            <Controller
+              name="password"
+              control={control}
+              rules={{
+                required: "Поле обов'язкове",
+                minLength: {
+                  value: 8,
+                  message: 'Мінімальна довжина 8 символів',
+                },
+              }}
+              render={({ fieldState, field }) => (
+                <InputField
+                  size="lg"
+                  placeholder="Пароль"
+                  type="password"
+                  leftIcon={(props) => <LockIcon {...props} />}
+                  invalid={fieldState.invalid}
+                  touched={fieldState.isTouched}
+                  error={fieldState.error?.message || ''}
+                  box={{
+                    mt: '4',
+                  }}
+                  {...field}
+                />
+              )}
+            />
+
+            {authStore.state.loginError && (
+              <Error error={authStore.state.loginError} mt="4" />
+            )}
 
             <Box
               mt="4"
@@ -74,7 +88,7 @@ export function Login() {
               justifyContent="space-between"
             >
               <Link to="/auth/confirm">На сторінку підтвердження</Link>
-              <Button type="submit" isLoading={loading}>
+              <Button type="submit" isLoading={authStore.state.loginIng}>
                 Виконати
               </Button>
             </Box>

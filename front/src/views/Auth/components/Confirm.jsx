@@ -1,35 +1,27 @@
 import { Box, Button, Heading } from '@chakra-ui/react';
 import { EmailIcon, LockIcon } from '@chakra-ui/icons';
-import { useController, useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import { InputField } from 'src/components/InputField';
 import { Error } from 'src/components/Error';
 import { Link } from 'src/components/Link';
-import { useConfirm } from '../hooks/useConfirm';
+import { authFeatures, useAuthStore } from 'src/features/auth';
+import { useNavigate } from 'react-router-dom';
 
 export function Confirm() {
-  const { loading, error, confirm } = useConfirm();
+  const authStore = useAuthStore();
+  const navigate = useNavigate();
 
   const { control, handleSubmit } = useForm({
     defaultValues: { password: '', email: '' },
   });
 
-  const email = useController({
-    name: 'email',
-    control,
-    rules: { required: "Поле обов'язкове" },
-  });
+  async function onSubmit(values) {
+    const res = await authFeatures.confirmFeature(values);
 
-  const password = useController({
-    name: 'password',
-    control,
-    rules: {
-      required: "Поле обов'язкове",
-      minLength: { value: 8, message: 'Мінімальна довжина 8 символів' },
-    },
-  });
-
-  function onSubmit(values) {
-    confirm(values);
+    if (res.success) {
+      // TODO: Pass email if to Login page
+      if (res.path) navigate(res.path);
+    }
   }
 
   return (
@@ -41,31 +33,54 @@ export function Confirm() {
       <Box mt="10" display="flex" alignItems="center" justifyContent="center">
         <Box width={400}>
           <form onSubmit={handleSubmit(onSubmit)}>
-            <InputField
-              size="lg"
-              placeholder="Email"
-              leftIcon={(props) => <EmailIcon {...props} />}
-              invalid={email.fieldState.invalid}
-              touched={email.fieldState.isTouched}
-              error={email.fieldState.error?.message || ''}
-              type="email"
-              {...email.field}
-            />
-            <InputField
-              size="lg"
-              placeholder="Пароль"
-              type="password"
-              leftIcon={(props) => <LockIcon {...props} />}
-              invalid={password.fieldState.invalid}
-              touched={password.fieldState.isTouched}
-              error={password.fieldState.error?.message || ''}
-              box={{
-                mt: '4',
-              }}
-              {...password.field}
+            <Controller
+              name="email"
+              control={control}
+              rules={{ required: "Поле обов'язкове" }}
+              render={({ fieldState, field }) => (
+                <InputField
+                  size="lg"
+                  placeholder="Email"
+                  leftIcon={(props) => <EmailIcon {...props} />}
+                  invalid={fieldState.invalid}
+                  touched={fieldState.isTouched}
+                  error={fieldState.error?.message || ''}
+                  type="email"
+                  {...field}
+                />
+              )}
             />
 
-            {error && <Error error={error} mt="4" />}
+            <Controller
+              name="password"
+              control={control}
+              rules={{
+                required: "Поле обов'язкове",
+                minLength: {
+                  value: 8,
+                  message: 'Мінімальна довжина 8 символів',
+                },
+              }}
+              render={({ fieldState, field }) => (
+                <InputField
+                  size="lg"
+                  placeholder="Пароль"
+                  type="password"
+                  leftIcon={(props) => <LockIcon {...props} />}
+                  invalid={fieldState.invalid}
+                  touched={fieldState.isTouched}
+                  error={fieldState.error?.message || ''}
+                  box={{
+                    mt: '4',
+                  }}
+                  {...field}
+                />
+              )}
+            />
+
+            {authStore.state.confirmError && (
+              <Error error={authStore.state.confirmError} mt="4" />
+            )}
 
             <Box
               mt="4"
@@ -74,7 +89,7 @@ export function Confirm() {
               justifyContent="space-between"
             >
               <Link to="/auth/login">До сторінки авторизації</Link>
-              <Button type="submit" isLoading={loading}>
+              <Button type="submit" isLoading={authStore.state.loginIng}>
                 Підтвердити
               </Button>
             </Box>

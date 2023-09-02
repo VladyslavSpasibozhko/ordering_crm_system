@@ -1,7 +1,6 @@
 import { Root } from './components/Root';
 
-function NotFound(props) {
-  console.log(props);
+function NotFound() {
   return <div>NotFound</div>;
 }
 

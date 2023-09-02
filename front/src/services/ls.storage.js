@@ -6,15 +6,18 @@ const KEYS = {
 };
 
 export const setItem = (key, value) => {
-  localStorage.setItem(key, JSON.stringify(value));
+  localStorage.setItem(
+    key,
+    typeof value === 'string' ? value : JSON.stringify(value),
+  );
 };
 
-export const getItem = (key, parse) => {
+export const getItem = (key) => {
+  const item = localStorage.getItem(key);
   try {
-    if (parse) JSON.parse(localStorage.getItem(key));
-    else return localStorage.getItem(key);
+    return JSON.parse(item);
   } catch (e) {
-    return null;
+    return item;
   }
 };
 
@@ -51,16 +54,5 @@ export const setTokens = (access, refresh, expires) => {
   setExpiresIn(expires);
 };
 
-export const isExpired = () => {
-  const { expiresIn } = retrieveTokens();
-
-  if (!expiresIn) return false;
-
-  const today = new Date().getTime();
-  const expiredDate = Number(expiresIn);
-
-  return today >= expiredDate;
-};
-
-export const getUserEmail = () => getItem(KEYS.USER_EMAIL);
+export const getUserEmail = () => getItem(KEYS.USER_EMAIL, true);
 export const setUserEmail = (value) => setItem(KEYS.USER_EMAIL, value);
