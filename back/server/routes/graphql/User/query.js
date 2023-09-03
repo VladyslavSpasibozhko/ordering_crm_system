@@ -1,4 +1,4 @@
-import { GraphQLID, GraphQLList } from 'graphql';
+import { GraphQLID, GraphQLList, GraphQLString } from 'graphql';
 import { UserType } from './types';
 import { db } from '../../../../db';
 
@@ -20,6 +20,29 @@ export default {
 
           if (!res.data.rowCount) {
             throw Error(`User with id=${args.id} not found`);
+          }
+
+          if (res.data.rows) return res.data.rows[0];
+        });
+    },
+  },
+  userByEmail: {
+    type: UserType,
+    args: {
+      email: {
+        type: GraphQLString,
+      },
+    },
+    resolve: async (_, args) => {
+      return db
+        .select(['*'], 'users')
+        .where({ email: args.email })
+        .perform()
+        .then((res) => {
+          if (res.error) throw Error(res.error);
+
+          if (!res.data.rowCount) {
+            throw Error(`User with email=${args.email} not found`);
           }
 
           if (res.data.rows) return res.data.rows[0];
