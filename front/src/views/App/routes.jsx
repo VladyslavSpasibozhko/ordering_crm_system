@@ -1,12 +1,15 @@
 import { AppRoot } from './components/AppRoot';
+import { Workplace } from './Workplace';
 
 export const routes = () => [
   {
     path: 'app',
     element: <AppRoot />,
-  },
-  {
-    path: '*',
-    element: <div>Not Found</div>,
+    children: [
+      {
+        path: 'workplace',
+        element: <Workplace />,
+      },
+    ],
   },
 ];
