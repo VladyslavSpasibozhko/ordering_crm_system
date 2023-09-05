@@ -4,11 +4,12 @@ import { Controller, useForm } from 'react-hook-form';
 import { InputField } from 'src/components/InputField';
 import { Error } from 'src/components/Error';
 import { Link } from 'src/components/Link';
-import { authFeatures, useAuthStore } from 'src/features/auth';
+import { authFeatures } from 'src/features/auth';
 import { useNavigate } from 'react-router-dom';
+import { useRequest } from 'src/lib/fetchClient';
 
 export function Confirm() {
-  const authStore = useAuthStore();
+  const { request, loading, error } = useRequest(authFeatures.confirmFeature);
   const navigate = useNavigate();
 
   const { control, handleSubmit } = useForm({
@@ -16,7 +17,7 @@ export function Confirm() {
   });
 
   async function onSubmit(values) {
-    const res = await authFeatures.confirmFeature(values);
+    const res = await request(values);
 
     if (res.success) {
       // TODO: Pass email if to Login page
@@ -78,9 +79,7 @@ export function Confirm() {
               )}
             />
 
-            {authStore.state.confirmError && (
-              <Error error={authStore.state.confirmError} mt="4" />
-            )}
+            {error && <Error error={error} mt="4" />}
 
             <Box
               mt="4"
@@ -89,7 +88,7 @@ export function Confirm() {
               justifyContent="space-between"
             >
               <Link to="/auth/login">До сторінки авторизації</Link>
-              <Button type="submit" isLoading={authStore.state.loginIng}>
+              <Button type="submit" isLoading={loading}>
                 Підтвердити
               </Button>
             </Box>

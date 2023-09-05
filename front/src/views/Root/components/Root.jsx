@@ -1,39 +1,29 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
-import { Box, Spinner } from '@chakra-ui/react';
 import { authFeatures } from 'src/features/auth';
+import { useRequest } from 'src/lib/fetchClient';
+import { subscribeAuth } from 'src/stores/auth.store';
+import { Loader } from 'src/components/Loader';
 
 export const Root = () => {
-  const [loading, setLoading] = useState(true);
+  const { loading, request } = useRequest(authFeatures.initTokenFeature, {
+    loading: true,
+    error: null,
+  });
 
   const navigate = useNavigate();
 
   useEffect(() => {
-    authFeatures.initTokenFeature().then((state) => {
-      navigate(state.path);
-      setLoading(false);
+    // TODO: clear on on mount
+    subscribeAuth((state) => {
+      if (state.loggedIn) navigate('/app/workplace');
+      else navigate('/auth/login');
     });
+
+    request();
   }, []);
 
-  if (loading) {
-    return (
-      <Box
-        width="100vw"
-        height="100vh"
-        display="flex"
-        alignItems="center"
-        justifyContent="center"
-      >
-        <Spinner
-          thickness="4px"
-          speed="0.65s"
-          emptyColor="gray.200"
-          color="blue.500"
-          size="xl"
-        />
-      </Box>
-    );
-  }
+  if (loading) return <Loader />;
 
   return <Outlet />;
 };

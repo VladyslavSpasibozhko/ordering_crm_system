@@ -21,9 +21,9 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.45.0",
-    "react-modal": "^3.16.1",
     "react-router-dom": "^6.13.0",
-    "urql": "^4.0.4"
+    "urql": "^4.0.4",
+    "zustand": "^4.4.1"
   },
   "devDependencies": {
     "@types/react": "^18.0.28",

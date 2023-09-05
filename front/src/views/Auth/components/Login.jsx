@@ -4,11 +4,12 @@ import { Error } from 'src/components/Error';
 import { Link } from 'src/components/Link';
 import { InputField } from 'src/components/InputField';
 import { Controller, useForm } from 'react-hook-form';
-import { authFeatures, useAuthStore } from 'src/features/auth';
+import { authFeatures } from 'src/features/auth';
 import { useNavigate } from 'react-router-dom';
+import { useRequest } from 'src/lib/fetchClient';
 
 export function Login() {
-  const authStore = useAuthStore();
+  const { request, loading, error } = useRequest(authFeatures.loginFeature);
   const navigate = useNavigate();
 
   const { control, handleSubmit } = useForm({
@@ -16,7 +17,7 @@ export function Login() {
   });
 
   async function onSubmit(values) {
-    const res = await authFeatures.loginFeature(values);
+    const res = await request(values);
 
     if (res.success) {
       if (res.path) navigate(res.path);
@@ -77,9 +78,7 @@ export function Login() {
               )}
             />
 
-            {authStore.state.loginError && (
-              <Error error={authStore.state.loginError} mt="4" />
-            )}
+            {error && <Error error={error} mt="4" />}
 
             <Box
               mt="4"
@@ -88,7 +87,7 @@ export function Login() {
               justifyContent="space-between"
             >
               <Link to="/auth/confirm">На сторінку підтвердження</Link>
-              <Button type="submit" isLoading={authStore.state.loginIng}>
+              <Button type="submit" isLoading={loading}>
                 Виконати
               </Button>
             </Box>

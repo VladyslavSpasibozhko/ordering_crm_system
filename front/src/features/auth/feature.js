@@ -4,26 +4,36 @@ import {
   setTokens,
   setUserEmail,
 } from 'src/services/ls.storage';
-import { authActions } from './store';
 import { authService } from 'src/services/rest/auth';
 import { errorToString } from 'src/utils/errorToString';
+import { getAuthStore } from 'src/stores/auth.store';
+import { client } from 'src/components/Urql/Urql';
+import { UserByEmailQuery } from 'src/services/graphql/user';
 
 function setLogout() {
-  authActions.setLoggedIn(false);
-  authActions.setEmail(null);
+  const authStore = getAuthStore();
+
+  authStore.setLoggedIn(false);
+  authStore.setEmail(null);
   setTokens('', '', '');
   setUserEmail('');
 }
 
 function setLogIn(email, access, refresh, expired) {
-  authActions.setLoggedIn(true);
-  authActions.setEmail(email);
-  setUserEmail(email);
+  const authStore = getAuthStore();
 
+  authStore.setLoggedIn(true);
+  authStore.setEmail(email);
+  setUserEmail(email);
   setTokens(access, refresh, expired);
 }
 
-function shouldRefreshToken(expiresIn) {
+function calculateExpiresIn(ms) {
+  const today = new Date().getTime();
+  return today + ms;
+}
+
+export function shouldRefreshToken(expiresIn) {
   if (!expiresIn) return false;
 
   const today = new Date().getTime();
@@ -32,13 +42,18 @@ function shouldRefreshToken(expiresIn) {
   return today >= expiredDate;
 }
 
-export async function refreshTokenFeature() {
+export async function refreshTokenFeature(token, email) {
   const res = await authService.refreshTokenReq({
-    body: { token: tokens.refreshToken },
+    body: { token },
   });
 
   if (res.success) {
-    setLogIn(email, res.data.token, res.data.expiresIn, tokens.refreshToken);
+    setLogIn(
+      email,
+      res.data.token,
+      token,
+      calculateExpiresIn(res.data.expiresIn),
+    );
   }
 
   if (!res.success) {
@@ -52,51 +67,35 @@ export async function initTokenFeature() {
   const email = getUserEmail();
   const tokens = retrieveTokens();
 
-  const login = () => ({
-    login: true,
-    path: '/app',
-  });
-
-  const logout = () => ({
-    login: false,
-    path: '/auth/login',
-  });
-
   if (!email) {
     setLogout();
-    return logout();
+    return;
   }
 
   if (!tokens.accessToken || !tokens.expiresIn) {
     setLogout();
-    return logout();
+    return;
   }
 
-  const shouldBeRefreshed = shouldRefreshToken();
+  const shouldBeRefreshed = shouldRefreshToken(tokens.expiresIn);
 
-  if (shouldBeRefreshed) {
-    if (tokens.refreshToken) {
-      const res = await refreshTokenFeature();
-      return res.success ? login() : logout();
-    }
-
-    setLogout();
-    return logout();
+  if (!shouldBeRefreshed) {
+    setLogIn(email, tokens.accessToken, tokens.refreshToken, tokens.expiresIn);
+    return;
   }
 
-  authActions.setLoggedIn(true);
-  authActions.setEmail(email);
+  if (tokens.refreshToken) {
+    await refreshTokenFeature(tokens.refreshToken, email);
+    return;
+  }
 
-  return login();
+  setLogout();
 }
 
 export async function confirmFeature(values) {
-  authActions.setConfirming(true);
-
   const confirmRes = await authService.confirmReq({ body: values });
 
   if (confirmRes.success) {
-    authActions.setLoginIng(true);
     const loginRes = await authService.loginReq({ body: values });
 
     if (loginRes.success) {
@@ -107,37 +106,41 @@ export async function confirmFeature(values) {
         loginRes.data.expiresIn,
       );
 
-      authActions.setLoginIng(false, null);
       return { success: true, path: '/app' };
     }
 
     setLogout();
-    authActions.setLoginIng(false, errorToString(loginRes));
 
     return { success: true, path: '/auth/login', email: values.email };
   } else {
-    authActions.setConfirming(false, errorToString(confirmRes));
+    const authStore = getAuthStore();
+    authStore.setConfirming(false, errorToString(confirmRes));
     return { success: false, path: null };
   }
 }
 
 export async function loginFeature(values) {
-  authActions.setLoginIng(true);
-
   const response = await authService.loginReq({ body: values });
 
   if (response.success) {
     setLogIn(
       values.email,
-      response.data.access,
-      response.data.refresh,
+      response.data.accessToken,
+      response.data.refreshToken,
       response.data.expiresIn,
     );
 
-    authActions.setLoginIng(false, null);
     return { success: true, path: '/app' };
   }
 
-  authActions.setLoginIng(false, errorToString(response));
   return { success: false, path: null };
+}
+
+export async function loadUserFeature(email) {
+  const res = await client.query(UserByEmailQuery, { email }).toPromise();
+
+  if (res.data) {
+    const authStore = getAuthStore();
+    authStore.setUser(res.data.userByEmail);
+  }
 }

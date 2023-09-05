@@ -42,10 +42,7 @@ export const setRefreshToken = (token) => {
 };
 
 export const setExpiresIn = (ms) => {
-  const today = new Date().getTime();
-  const expiredDate = today + ms;
-
-  setItem(KEYS.EXPIRES_IN, expiredDate);
+  setItem(KEYS.EXPIRES_IN, ms);
 };
 
 export const setTokens = (access, refresh, expires) => {

@@ -1,15 +1,24 @@
-import { Outlet, useNavigate } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 import { Box } from '@chakra-ui/react';
 import { UrqlProvider } from 'src/components/Urql';
 import { useEffect } from 'react';
+import { useRequest } from 'src/lib/fetchClient';
+import { authFeatures } from 'src/features/auth';
+import { useAuthStore } from 'src/stores/auth.store';
+import { Loader } from 'src/components/Loader';
 
 export function AppRoot() {
-  const navigate = useNavigate();
+  const { request, loading } = useRequest(authFeatures.loadUserFeature, {
+    loading: true,
+  });
+
+  const email = useAuthStore((state) => state.email);
 
   useEffect(() => {
-    // TODO: FIX IT
-    navigate('/app/workplace');
+    if (email) request(email);
   }, []);
+
+  if (loading) return <Loader />;
 
   return (
     <UrqlProvider>
