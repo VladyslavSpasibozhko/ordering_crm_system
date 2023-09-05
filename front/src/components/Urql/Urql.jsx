@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import { Provider } from 'urql';
 import { createClient } from 'src/lib/urqlClient';
 import { authFeatures } from 'src/features/auth';
-import { retrieveTokens } from 'src/services/ls.storage';
+import { getUserEmail, retrieveTokens } from 'src/services/ls.storage';
 
 export const client = createClient({
   getToken() {
@@ -10,7 +10,9 @@ export const client = createClient({
     return tokens.accessToken;
   },
   async refreshToken() {
-    await authFeatures.refreshTokenFeature();
+    const tokens = retrieveTokens();
+    const email = getUserEmail();
+    await authFeatures.refreshTokenFeature(tokens.refreshToken, email);
   },
   willError() {
     const { expiresIn } = retrieveTokens();
