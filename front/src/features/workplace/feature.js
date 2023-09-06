@@ -1,4 +1,4 @@
-import { getWorkplaceStore } from 'src/stores/workplace.store';
+import { getWorkplaceStore } from 'src/stores/cashier.store';
 import { getAuthStore } from 'src/stores/auth.store';
 
 export function createBaseOrderFeature(products = []) {

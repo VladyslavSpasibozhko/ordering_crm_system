@@ -4,7 +4,7 @@ const initial = {
   order: null,
 };
 
-export const useWorkplaceStore = create((set, get) => ({
+export const useCashierStore = create((set, get) => ({
   ...initial,
   products: () => {
     const store = get();
@@ -68,6 +68,6 @@ export const useWorkplaceStore = create((set, get) => ({
   },
 }));
 
-export const subscribeWorkplace = useWorkplaceStore.subscribe;
+export const subscribeCashier = useCashierStore.subscribe;
 
-export const getWorkplaceStore = () => useWorkplaceStore.getState();
+export const getCashierStore = () => useCashierStore.getState();

@@ -1,20 +1,12 @@
-import { Auth } from './components/Auth';
-import { Confirm } from './components/Confirm';
-import { Login } from './components/Login';
+import { Route, Routes } from 'react-router-dom';
+import { Confirm } from './Confirm';
+import { Login } from './Login';
 
-export const routes = () => [
-  {
-    path: 'auth',
-    element: <Auth />,
-    children: [
-      {
-        path: 'login',
-        element: <Login />,
-      },
-      {
-        path: 'confirm',
-        element: <Confirm />,
-      },
-    ],
-  },
-];
+export function AuthRoutes() {
+  return (
+    <Routes>
+      <Route path="login" element={<Login />} />
+      <Route path="confirm" element={<Confirm />} />
+    </Routes>
+  );
+}

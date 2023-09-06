@@ -1,17 +1,17 @@
-import { Root } from './components/Root';
+import { Route, Routes } from 'react-router-dom';
+import { Root } from './Root';
 
 function NotFound() {
   return <div>NotFound</div>;
 }
 
-export const routes = (children) => [
-  {
-    path: '/',
-    element: <Root />,
-    children: children,
-  },
-  {
-    path: '*',
-    Component: NotFound,
-  },
-];
+export function RootRoutes({ children }) {
+  return (
+    <Routes>
+      <Route path="/" element={<Root />}>
+        {children}
+      </Route>
+      <Route path="*" element={<NotFound />} />
+    </Routes>
+  );
+}

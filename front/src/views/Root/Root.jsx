@@ -6,21 +6,23 @@ import { subscribeAuth } from 'src/stores/auth.store';
 import { Loader } from 'src/components/Loader';
 
 export const Root = () => {
+  const navigate = useNavigate();
   const { loading, request } = useRequest(authFeatures.initTokenFeature, {
     loading: true,
     error: null,
   });
 
-  const navigate = useNavigate();
-
   useEffect(() => {
-    // TODO: clear on on mount
-    subscribeAuth((state) => {
-      if (state.loggedIn) navigate('/app/workplace');
-      else navigate('/auth/login');
+    const unsubscribe = subscribeAuth((state, prevState) => {
+      if (state.loggedIn === prevState.loggedIn) return;
+
+      if (state.loggedIn) navigate('/app');
+      else navigate('/auth');
     });
 
     request();
+
+    return () => unsubscribe();
   }, []);
 
   if (loading) return <Loader />;

@@ -2,7 +2,7 @@ import { Box, Divider } from '@chakra-ui/react';
 import { RightPanel } from './RightPanel';
 import { LeftPanel } from './LeftPanel';
 
-export function WorkplaceLayout({ children }) {
+export function CashierLayout({ children }) {
   return (
     <Box
       height="100vh"

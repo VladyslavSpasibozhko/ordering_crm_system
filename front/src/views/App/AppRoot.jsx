@@ -1,6 +1,4 @@
-import { Outlet } from 'react-router-dom';
-import { Box } from '@chakra-ui/react';
-import { UrqlProvider } from 'src/components/Urql';
+import { UrqlProvider } from 'src/providers/Urql';
 import { useEffect } from 'react';
 import { useRequest } from 'src/lib/fetchClient';
 import { authFeatures } from 'src/features/auth';
@@ -20,11 +18,5 @@ export function AppRoot() {
 
   if (loading) return <Loader />;
 
-  return (
-    <UrqlProvider>
-      <Box height="100vh" width="100vw">
-        <Outlet />
-      </Box>
-    </UrqlProvider>
-  );
+  return <UrqlProvider></UrqlProvider>;
 }

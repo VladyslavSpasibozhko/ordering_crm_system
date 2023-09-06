@@ -1,8 +1,10 @@
-import { GraphiQl } from './components/GraphiQL';
+import { Route, Routes } from 'react-router-dom';
+import { GraphiQl } from './GraphiQL';
 
-export const routes = () => [
-  {
-    path: 'graphiql',
-    element: <GraphiQl />,
-  },
-];
+export function GraphiQLRoutes() {
+  return (
+    <Routes>
+      <Route index element={<GraphiQl />} />
+    </Routes>
+  );
+}

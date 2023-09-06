@@ -7,7 +7,7 @@ import {
 import { authService } from 'src/services/rest/auth';
 import { errorToString } from 'src/utils/errorToString';
 import { getAuthStore } from 'src/stores/auth.store';
-import { client } from 'src/components/Urql/Urql';
+import { client } from 'src/providers/Urql/Urql';
 import { UserByEmailQuery } from 'src/services/graphql/user';
 
 function setLogout() {
@@ -143,4 +143,6 @@ export async function loadUserFeature(email) {
     const authStore = getAuthStore();
     authStore.setUser(res.data.userByEmail);
   }
+
+  return res;
 }
